@@ -17,6 +17,11 @@ UART_STANDALONE_DEFINE_GLOBALS
 #define MMIO_INDEX_INPUT 0
 #define MMIO_INDEX_OUTPUT 1
 
+/* Delay for 100ns. */
+#define PULSE_DELAY_TICKS 10
+/* Generate a pulse of 1050ns. */
+#define PULSE_WIDTH_TICKS 105
+
 
 void test_main(void);
 void test_main(void)
@@ -48,20 +53,44 @@ void test_main(void)
 	ulValue |= 0U << HOSTMSK(gpio_cfg0_mode);
 	ptGpioArea->aulGpio_cfg[0] = ulValue;
 
-	/* Stop counter0. */
-	ptGpioArea->aulGpio_counter_ctrl[0] = 0;
+	/* Set GPIO1 to input. */
+	ptGpioArea->aulGpio_cfg[1] = 0;
 
-	/* Set the counter value to 0 and the maximum to 0xffffffff. */
+	/* Stop counter 0 and 1. */
+	ptGpioArea->aulGpio_counter_ctrl[0] = 0;
+	ptGpioArea->aulGpio_counter_ctrl[1] = 0;
+
+	/* Set the value of counter 0 to 0 and the maximum to 0xffffffff. */
 	ptGpioArea->aulGpio_counter_cnt[0] = 0;
 	ptGpioArea->aulGpio_counter_max[0] = 0xffffffffU;
 
-	/* Setup counter0 to count GPIO0 negative edges. */
+	/* Set the value of counter 1 to 0 and the maximum to the sum of the delay and the pulse. */
+	ptGpioArea->aulGpio_counter_cnt[1] = 0;
+	ptGpioArea->aulGpio_counter_max[1] = PULSE_DELAY_TICKS + PULSE_WIDTH_TICKS - 1U;
+
+	/* Set the treshold of GPIO 1 to the delay. */
+	ptGpioArea->aulGpio_tc[1] = PULSE_DELAY_TICKS;
+
+	/* Setup counter 0 to count GPIO0 negative edges. */
 	ulValue  = 0U << HOSTSRT(gpio_counter0_ctrl_gpio_ref);
 	ulValue |= 1U << HOSTSRT(gpio_counter0_ctrl_event_act);
 	ulValue |= HOSTMSK(gpio_counter0_ctrl_once);
 	ulValue |= HOSTMSK(gpio_counter0_ctrl_sel_event);
 	ulValue |= HOSTMSK(gpio_counter0_ctrl_run);
 	ptGpioArea->aulGpio_counter_ctrl[0] = ulValue;
+
+	/* Setup counter 1 to start with the GPIO0 event. */
+	ulValue  = 0U << HOSTSRT(gpio_counter1_ctrl_gpio_ref);
+	ulValue |= 3U << HOSTSRT(gpio_counter1_ctrl_event_act);
+	ulValue |= HOSTMSK(gpio_counter1_ctrl_once);
+	ulValue |= HOSTMSK(gpio_counter1_ctrl_sel_event);
+	ulValue |= HOSTMSK(gpio_counter1_ctrl_run);
+	ptGpioArea->aulGpio_counter_ctrl[1] = ulValue;
+
+	/* Set GPIO1 to PWM mode with counter 1. */
+	ulValue  = 1U << HOSTSRT(gpio_cfg1_count_ref);
+	ulValue |= 7U << HOSTSRT(gpio_cfg1_mode);
+	ptGpioArea->aulGpio_cfg[1] = ulValue;
 
 	ulValue = ptGpioArea->aulGpio_counter_cnt[0];
 	while(1)
