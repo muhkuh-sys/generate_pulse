@@ -19,8 +19,10 @@ UART_STANDALONE_DEFINE_GLOBALS
 
 /* Delay for 100ns. */
 #define PULSE_DELAY_TICKS 10
-/* Generate a pulse of 1050ns. */
-#define PULSE_WIDTH_TICKS 105
+/* The goal is a pulse with 1050ns.
+ * Because of the slow rising edges, set this to 1000ns.
+ */
+#define PULSE_WIDTH_TICKS 100
 
 
 void test_main(void);
