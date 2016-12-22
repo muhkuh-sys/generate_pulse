@@ -48,9 +48,9 @@ void test_main(void)
 	ptAsicCtrlArea->ulAsic_ctrl_access_key = ptAsicCtrlArea->ulAsic_ctrl_access_key;  /* @suppress("Assignment to itself") */
 	ptMmioCtrlArea->aulMmio_cfg[MMIO_INDEX_OUTPUT] = MMIO_CFG_gpio1;
 
-	/* Set GPIO0 to inverted input. */
-	ulValue  = HOSTMSK(gpio_cfg0_inv);
-	ulValue |= 0U << HOSTMSK(gpio_cfg0_mode);
+	/* Set GPIO0 to input. */
+	ulValue  = 0U << HOSTSRT(gpio_cfg0_inv);
+	ulValue |= 0U << HOSTSRT(gpio_cfg0_mode);
 	ptGpioArea->aulGpio_cfg[0] = ulValue;
 
 	/* Set GPIO1 to input. */
