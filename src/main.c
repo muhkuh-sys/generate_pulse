@@ -87,8 +87,10 @@ void test_main(void)
 	ulValue |= HOSTMSK(gpio_counter1_ctrl_run);
 	ptGpioArea->aulGpio_counter_ctrl[1] = ulValue;
 
-	/* Set GPIO1 to PWM mode with counter 1. */
+	/* Set GPIO1 to PWM mode with counter 1.
+	 * Set to inverted mode to have a proper reset signal. */
 	ulValue  = 1U << HOSTSRT(gpio_cfg1_count_ref);
+	ulValue |= 1U << HOSTSRT(gpio_cfg0_inv);
 	ulValue |= 7U << HOSTSRT(gpio_cfg1_mode);
 	ptGpioArea->aulGpio_cfg[1] = ulValue;
 
