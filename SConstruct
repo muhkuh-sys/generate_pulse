@@ -29,6 +29,7 @@ Import('atEnv')
 
 # Create a build environment for the ARM9 based netX chips.
 env_arm9 = atEnv.DEFAULT.CreateEnvironment(['gcc-arm-none-eabi-4.7', 'asciidoc'])
+env_arm9.CreateCompilerEnv('NETX10', ['arch=armv5te'])
 env_arm9.CreateCompilerEnv('NETX56', ['arch=armv5te'])
 
 # Build the platform libraries.
@@ -65,3 +66,10 @@ tEnv.Replace(LDFILE = 'src/netx56/netx56_intram.ld')
 tSrc = tEnv.SetBuildPath('targets/netx56_intram', 'src', sources)
 tElf = tEnv.Elf('targets/netx56_intram/netx56_generate_pulse.elf', tSrc + tEnv['PLATFORM_LIBRARY'])
 bb0_netx56_intram = tEnv.BootBlock('targets/generate_pulse_netx56_spi_intram.bin', tElf, BOOTBLOCK_SRC='SPI_GEN_10', BOOTBLOCK_DST='INTRAM')
+
+tEnv = atEnv.NETX10.Clone()
+tEnv.Append(CPPPATH = astrIncludePaths)
+tEnv.Replace(LDFILE = 'src/netx10/netx10_intram.ld')
+tSrc = tEnv.SetBuildPath('targets/netx10_intram', 'src', sources)
+tElf = tEnv.Elf('targets/netx10_intram/netx10_generate_pulse.elf', tSrc + tEnv['PLATFORM_LIBRARY'])
+bb0_netx10_intram = tEnv.BootBlock('targets/generate_pulse_netx10_spi_intram.bin', tElf, BOOTBLOCK_SRC='SPI_GEN_10', BOOTBLOCK_DST='INTRAM')
